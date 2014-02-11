@@ -1,3 +1,13 @@
+extendDeep = (dst) ->
+	angular.forEach arguments, (obj) ->
+		if obj != dst
+			angular.forEach obj, (value, key) ->
+				if dst[key] && dst[key].constructor && dst[key].constructor == Object
+					extendDeep dst[key], value
+				else
+					dst[key] = value
+	return dst;
+
 angular.module('l10n', ['ngLocale'])
 .provider('l10n',
 	db: {}
@@ -10,7 +20,7 @@ angular.module('l10n', ['ngLocale'])
 				delete values[key]
 
 		@localeMessages[localeCode] = {} if typeof @localeMessages[localeCode] == 'undefined'
-		angular.extend @localeMessages[localeCode], values
+		extendDeep @localeMessages[localeCode], values
 
 	setLocale: (localeCode) ->
 		# clean up DB first
